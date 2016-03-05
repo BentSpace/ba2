@@ -25,6 +25,7 @@ std::cout << "\033[2J\033[1;1H"
 void helpScreen();
 void checkForNoArgs(int);
 void checkForSlashes(int, char * []);
+void collectFirstCharArgs(int, char * [], char []);
 void displayErrorMessage();
 
 // Global Constants
@@ -38,8 +39,11 @@ RETURNS:           Nothing (void function)
 NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
 int main(int argc, char * argv[]) {
+    char argCollection [argc];
+    std::cout << "argc = " << argc << std::endl;
     checkForNoArgs(argc);
     checkForSlashes(argc, argv);
+    collectFirstCharArgs(argc, argv, argCollection);
     return 0;
 }
 
@@ -87,6 +91,43 @@ void checkForSlashes(int argc, char * argv[])
     }
 }
 
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     collectFirstCharArgs()
+PURPOSE:           Purpose of function ...
+RETURNS:           What the function returns ... or ...
+RETURNS:           Nothing (void function)
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+void collectFirstCharArgs(int argc, char * argv[], char argCollection [])
+{
+    for (int i = 1; i < argc; i++)
+    {
+        char * argument = argv[i];
+        if (argument[1] == 0)
+        {
+            displayErrorMessage();
+        }
+        argCollection[i - 1] = argument[1]; // Add letter to arg collectoin
+    }
+    argCollection[argc - 1] = '\0';  // Set the last element of the array to the null byte
+    for (int i = 0; i < argc; i++)
+    {
+        std::cout << "argCollection[i]" <<argCollection[i] << std::endl;
+        std::cout << "argCollection.sizeof" <<sizeof(argCollection)<< std::endl;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     sortArgCollection()
+PURPOSE:           Purpose of function ...
+RETURNS:           What the function returns ... or ...
+RETURNS:           Nothing (void function)
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+void sortArgCollection()
+{
+    
+}
 /* -----------------------------------------------------------------------------
 FUNCTION NAME:     validateArgCombination()
 PURPOSE:           Purpose of function ...
