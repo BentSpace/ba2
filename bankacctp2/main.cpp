@@ -8,16 +8,17 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY:
+MODIFICATION HISTORY: created sortArgCollection() function
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-03         Version 1.0
+Nathan Bertram          2016-03-04         Version 4.0
 
 ----------------------------------------------------------------------------- */
 
 #include <iostream>
 #include <cstring>
+#include <algorithm>
 #define CLEAR_SCREEN \
 std::cout << "\033[2J\033[1;1H"
 
@@ -26,6 +27,7 @@ void helpScreen();
 void checkForNoArgs(int);
 void checkForSlashes(int, char * []);
 void collectFirstCharArgs(int, char * [], char []);
+void sortArgCollection(char argCollection [], int argc);
 void displayErrorMessage();
 
 // Global Constants
@@ -44,6 +46,7 @@ int main(int argc, char * argv[]) {
     checkForNoArgs(argc);
     checkForSlashes(argc, argv);
     collectFirstCharArgs(argc, argv, argCollection);
+    sortArgCollection(argCollection, argc);
     return 0;
 }
 
@@ -113,7 +116,6 @@ void collectFirstCharArgs(int argc, char * argv[], char argCollection [])
     for (int i = 0; i < argc; i++)
     {
         std::cout << "argCollection[i]" <<argCollection[i] << std::endl;
-        std::cout << "argCollection.sizeof" <<sizeof(argCollection)<< std::endl;
     }
 }
 
@@ -124,8 +126,14 @@ RETURNS:           What the function returns ... or ...
 RETURNS:           Nothing (void function)
 NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
-void sortArgCollection()
+void sortArgCollection(char argCollection [], int argc)
 {
+    // sorts from first parameter to second parameter
+    std::sort(argCollection, argCollection + (argc - 1));
+    for (int i = 0; i < argc; i++)
+    {
+        std::cout << "argCollection[i]" <<argCollection[i] << std::endl;
+    }
     
 }
 /* -----------------------------------------------------------------------------
