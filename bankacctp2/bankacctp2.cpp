@@ -1,6 +1,6 @@
 /* -----------------------------------------------------------------------------
 
-FILE:              main.cpp
+FILE:              bankacctp2.cpp
 
 DESCRIPTION:       A brief description of this source code file ...
 
@@ -19,8 +19,7 @@ Nathan Bertram          2016-03-04         Version 5.0
 #include <iostream>
 #include <cstring>
 #include <algorithm>
-#define CLEAR_SCREEN \
-std::cout << "\033[2J\033[1;1H"
+#include "bankacctp2.hpp"
 
 // Function Protypes
 void helpScreen();
@@ -206,3 +205,16 @@ void displayErrorMessage()
     std::cout << "\nSorry those were not a valid parameters, please try again\n\n";
     exit(42);
 }
+
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     readFromDatabase()
+PURPOSE:           Purpose of function ...
+RETURNS:           What the function returns ... or ...
+RETURNS:           Nothing (void function)
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+void readFromDatabase()
+{
+    
+}
+
