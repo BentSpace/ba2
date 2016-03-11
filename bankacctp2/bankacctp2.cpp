@@ -8,17 +8,18 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: created matchArgCombination() function
+MODIFICATION HISTORY: created readFromDatabase Function
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-04         Version 5.0
+Nathan Bertram          2016-03-11         Version 6.0
 
 ----------------------------------------------------------------------------- */
 
 #include <iostream>
 #include <cstring>
 #include <algorithm>
+#include <fstream>
 #include "bankacctp2.hpp"
 
 // Function Protypes
@@ -29,6 +30,7 @@ void collectFirstCharArgs(int, char * [], char []);
 void sortArgCollection(char [], int);
 void matchArgCombination(char [], int);
 void displayErrorMessage();
+void readFromDatabaseFile(Record []);
 
 // Global Constants
 const char SLASH = '/';
@@ -55,7 +57,10 @@ NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
 int main(int argc, char * argv[]) {
     char argCollection [argc];
+    Record bankAccountDatabase [100];
+    
     //std::cout << "argc = " << argc << std::endl;
+    readFromDatabaseFile(bankAccountDatabase);
     checkForNoArgs(argc);
     checkForSlashes(argc, argv);
     collectFirstCharArgs(argc, argv, argCollection);
@@ -213,8 +218,36 @@ RETURNS:           What the function returns ... or ...
 RETURNS:           Nothing (void function)
 NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
-void readFromDatabase()
+void readFromDatabaseFile(Record bankAccountDatabase [])
 {
+    char dataFileName [] = "database.txt";
+    char lineBuffer [100]; // A place to store the one line from the database file
+    std::ifstream dataFile;
+    int i = 0; // counter
     
+    dataFile.open(dataFileName);
+    
+    while (dataFile >> bankAccountDatabase[i].firstName) {
+        dataFile >> bankAccountDatabase[i].lastName;
+        dataFile >> bankAccountDatabase[i].middleInitial;
+        dataFile >> bankAccountDatabase[i].ssNum;
+        dataFile >> bankAccountDatabase[i].phoneNumAreaCode;
+        dataFile >> bankAccountDatabase[i].phoneNum;
+        dataFile >> bankAccountDatabase[i].balance;
+        dataFile >> bankAccountDatabase[i].accountNum;
+        dataFile >> bankAccountDatabase[i].password;
+        std::cout << bankAccountDatabase[i].firstName << std::endl;
+        std::cout << bankAccountDatabase[i].lastName << std::endl;
+        std::cout << bankAccountDatabase[i].middleInitial << std::endl;
+        std::cout << bankAccountDatabase[i].ssNum << std::endl;
+        std::cout << bankAccountDatabase[i].phoneNumAreaCode << std::endl;
+        std::cout << bankAccountDatabase[i].phoneNum << std::endl;
+        std::cout << bankAccountDatabase[i].balance << std::endl;
+        std::cout << bankAccountDatabase[i].accountNum << std::endl;
+        std::cout << bankAccountDatabase[i].password << std::endl;
+        i++;
+    }
+    
+    dataFile.close();
 }
 
