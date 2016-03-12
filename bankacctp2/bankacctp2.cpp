@@ -8,7 +8,7 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: created readFromDatabase Function
+MODIFICATION HISTORY: created validateAccountNumberPassword and displayInfo
 
 Author                  Date               Version
 ---------------         ----------         --------------
@@ -22,15 +22,22 @@ Nathan Bertram          2016-03-11         Version 6.0
 #include <fstream>
 #include "bankacctp2.hpp"
 
+using std::cout;
+using std::endl;
+
 // Function Protypes
 void helpScreen();
 void checkForNoArgs(int);
 void checkForSlashes(int, char * []);
 void collectFirstCharArgs(int, char * [], char []);
 void sortArgCollection(char [], int);
-void matchArgCombination(char [], int);
+void matchArgCombination(int, char * [], char [],  Record []);
 void displayErrorMessage();
 void readFromDatabaseFile(Record []);
+void displayInfo(int, char * [], Record []);
+int findAccountNumber(Record [], char []);
+void parseArguments(int, char * [], CommandLineParameters);
+bool validateAccountNumberPassword(char [], char [], Record []);
 
 // Global Constants
 const char SLASH = '/';
@@ -57,15 +64,19 @@ NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
 int main(int argc, char * argv[]) {
     char argCollection [argc];
-    Record bankAccountDatabase [100];
+    Record bankAccountDatabase [100] = { 0 };
+    CommandLineParameters params = { 0 };
+    char accountNumber [] = "F123C";
     
-    //std::cout << "argc = " << argc << std::endl;
+    //cout << "argc = " << argc << endl;
     readFromDatabaseFile(bankAccountDatabase);
     checkForNoArgs(argc);
     checkForSlashes(argc, argv);
     collectFirstCharArgs(argc, argv, argCollection);
     sortArgCollection(argCollection, argc);
-    matchArgCombination(argCollection, argc);
+    //parseArguments(argc, argv, params);
+    matchArgCombination(argc, argv, argCollection, bankAccountDatabase);
+    //findAccountNumber(bankAccountDatabase, accountNumber);
     return 0;
 }
 
@@ -91,7 +102,7 @@ NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
 void helpScreen()
 {
-    std::cout << "I'm a help screen";
+    cout << "I'm a help screen";
     exit(0);
 }
 
@@ -135,7 +146,7 @@ void collectFirstCharArgs(int argc, char * argv[], char argCollection [])
     argCollection[argc - 1] = '\0';  // Set the last element of the array to the null byte
 //    for (int i = 0; i < argc; i++)
 //    {
-//        std::cout << "argCollection[i]" <<argCollection[i] << std::endl;
+//        cout << "argCollection[i]" <<argCollection[i] << endl;
 //    }
 }
 
@@ -152,7 +163,7 @@ void sortArgCollection(char argCollection [], int argc)
     std::sort(argCollection, argCollection + (argc - 1));
 //    for (int i = 0; i < argc; i++)
 //    {
-//        std::cout << "argCollection[i]" <<argCollection[i] << std::endl;
+//        cout << "argCollection[i]" <<argCollection[i] << endl;
 //    }
     
 }
@@ -163,30 +174,30 @@ RETURNS:           What the function returns ... or ...
 RETURNS:           Nothing (void function)
 NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
-void matchArgCombination(char argCollection [], int argc)
+void matchArgCombination(int argc, char * argv[], char argCollection [], Record bankAccountDatabase [])
 {
     if (strcmp(argCollection, HELP) == 0)
         helpScreen();
     else if (strcmp(argCollection, DISPLAY_INFO) == 0)
-        std::cout << "displayInfo()";
+        displayInfo(argc, argv, bankAccountDatabase);
     else if (strcmp(argCollection, CHANGE_FIRST_NAME) == 0)
-        std::cout << "changeFirstName()";
+        cout << "changeFirstName()";
     else if (strcmp(argCollection, CHANGE_LAST_NAME) == 0)
-        std::cout << "changeLastName()";
+        cout << "changeLastName()";
     else if (strcmp(argCollection, CHANGE_MIDDLE_INTIAL) == 0)
-        std::cout << "changeMiddleIntial()";
+        cout << "changeMiddleIntial()";
     else if (strcmp(argCollection, CHANGE_SSN) == 0)
-        std::cout << "changeSSN()";
+        cout << "changeSSN()";
     else if (strcmp(argCollection, CHANGE_AREA_CODE) == 0)
-        std::cout << "changeAreaCode()";
+        cout << "changeAreaCode()";
     else if (strcmp(argCollection, CHANGE_PHONE_NUMBER) == 0)
-        std::cout << "changePhoneNumber()";
+        cout << "changePhoneNumber()";
     else if (strcmp(argCollection, TRANSFER) == 0)
-        std::cout << "transfer()";
+        cout << "transfer()";
     else if (strcmp(argCollection, CHANGE_PASSWORD) == 0)
-        std::cout << "changePassword()";
+        cout << "changePassword()";
     else if (strcmp(argCollection, PRODUCE_REPORT) == 0)
-        std::cout << "produceReport()";
+        cout << "produceReport()";
     else
         displayErrorMessage();
 }
@@ -207,7 +218,7 @@ NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
 void displayErrorMessage()
 {
-    std::cout << "\nSorry those were not a valid parameters, please try again\n\n";
+    cout << "\nSorry those were not a valid parameters, please try again\n\n";
     exit(42);
 }
 
@@ -236,18 +247,157 @@ void readFromDatabaseFile(Record bankAccountDatabase [])
         dataFile >> bankAccountDatabase[i].balance;
         dataFile >> bankAccountDatabase[i].accountNum;
         dataFile >> bankAccountDatabase[i].password;
-        std::cout << bankAccountDatabase[i].firstName << std::endl;
-        std::cout << bankAccountDatabase[i].lastName << std::endl;
-        std::cout << bankAccountDatabase[i].middleInitial << std::endl;
-        std::cout << bankAccountDatabase[i].ssNum << std::endl;
-        std::cout << bankAccountDatabase[i].phoneNumAreaCode << std::endl;
-        std::cout << bankAccountDatabase[i].phoneNum << std::endl;
-        std::cout << bankAccountDatabase[i].balance << std::endl;
-        std::cout << bankAccountDatabase[i].accountNum << std::endl;
-        std::cout << bankAccountDatabase[i].password << std::endl;
+//        cout << bankAccountDatabase[i].firstName << endl;
+//        cout << bankAccountDatabase[i].lastName << endl;
+//        cout << bankAccountDatabase[i].middleInitial << endl;
+//        cout << bankAccountDatabase[i].ssNum << endl;
+//        cout << bankAccountDatabase[i].phoneNumAreaCode << endl;
+//        cout << bankAccountDatabase[i].phoneNum << endl;
+//        cout << bankAccountDatabase[i].balance << endl;
+//        cout << bankAccountDatabase[i].accountNum << endl;
+//        cout << bankAccountDatabase[i].password << endl;
         i++;
     }
+//    for (int j = 0; j < 100; j++)
+//    {
+//        cout << bankAccountDatabase[j].firstName << endl;
+//        cout << bankAccountDatabase[j].lastName << endl;
+//        cout << bankAccountDatabase[j].middleInitial << endl;
+//        cout << bankAccountDatabase[j].ssNum << endl;
+//        cout << bankAccountDatabase[j].phoneNumAreaCode << endl;
+//        cout << bankAccountDatabase[j].phoneNum << endl;
+//        cout << bankAccountDatabase[j].balance << endl;
+//        cout << bankAccountDatabase[j].accountNum << endl;
+//        cout << bankAccountDatabase[j].password << endl;
+//    }
     
     dataFile.close();
 }
 
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     displayInfo()
+PURPOSE:           Purpose of function ...
+RETURNS:           What the function returns ... or ...
+RETURNS:           Nothing (void function)
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+void displayInfo(int argc, char * argv[], Record bankAccountDatabase [])
+{
+    //char accountNumber [] = "C123A";
+    char databaseName [100] = {0};
+    char accountNumber [100] = {0};
+    char password [100] = {0};
+    int databaseIndex;
+    
+    for (int i = 1; i < argc; i++)
+    {
+        char * argument = argv[i];
+        if (argument[1] == 'D')
+            strcpy(databaseName, &argument[2]);
+        if (argument[1] == 'N')
+            strcpy(accountNumber, &argument[2]);
+        if (argument[1] == 'P')
+            strcpy(password, &argument[2]);
+    }
+    
+    if (validateAccountNumberPassword(accountNumber, password, bankAccountDatabase))
+    {
+        databaseIndex = findAccountNumber(bankAccountDatabase, accountNumber);
+        cout << bankAccountDatabase[databaseIndex].firstName << endl;
+        cout << bankAccountDatabase[databaseIndex].lastName << endl;
+        cout << bankAccountDatabase[databaseIndex].middleInitial << endl;
+        cout << bankAccountDatabase[databaseIndex].ssNum << endl;
+        cout << bankAccountDatabase[databaseIndex].phoneNumAreaCode << endl;
+        cout << bankAccountDatabase[databaseIndex].phoneNum << endl;
+        cout << bankAccountDatabase[databaseIndex].balance << endl;
+        cout << bankAccountDatabase[databaseIndex].accountNum << endl;
+        cout << bankAccountDatabase[databaseIndex].password << endl;
+    }
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     findAccountNumber()
+PURPOSE:           Looks for account # that is passed in
+RETURNS:           the index of the record in the database the contains that
+RETURNS:           record or -1 if not found
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+int findAccountNumber(Record bankAccountDatabase [], char accountNumber [])
+{
+    int i = 0;
+    
+//    for (int j = 0; j < 100; j++)
+//    {
+//        cout << bankAccountDatabase[j].firstName << endl;
+//        cout << bankAccountDatabase[j].lastName << endl;
+//        cout << bankAccountDatabase[j].middleInitial << endl;
+//        cout << bankAccountDatabase[j].ssNum << endl;
+//        cout << bankAccountDatabase[j].phoneNumAreaCode << endl;
+//        cout << bankAccountDatabase[j].phoneNum << endl;
+//        cout << bankAccountDatabase[j].balance << endl;
+//        cout << bankAccountDatabase[j].accountNum << endl;
+//        cout << bankAccountDatabase[j].password << endl;
+//    }
+    while (bankAccountDatabase[i].accountNum[0] != 0)
+    {
+        if (strcmp(bankAccountDatabase[i].accountNum, accountNumber) == 0)
+            return i;
+        //cout << i << endl;
+        i++;
+    }
+    cout << "The account number: " << accountNumber << " was not found";
+    exit(1);
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     verifyInDatabase()
+PURPOSE:           verifies the passed in argument is contained in the database
+RETURNS:
+RETURNS:
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     validAccountNumberPassword()
+PURPOSE:           checks that passed in account number and password match a 
+                    single record in the database
+RETURNS:            true if a valid account number and password combination
+RETURNS:            displays error message and exits, if not
+NOTES:
+----------------------------------------------------------------------------- */
+bool validateAccountNumberPassword(char accountNumber [], char password [], Record bankAccountDatabase [])
+{
+    int databaseIndex; // Index of database records that contains account #
+    
+    databaseIndex = findAccountNumber(bankAccountDatabase, accountNumber);
+    if (strcmp(bankAccountDatabase[databaseIndex].password, password) == 0)
+        return true;
+    else
+    {
+        cout << "\nThat account number and password combination was not valid\n";
+        exit(2);
+    }
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     parseArguments()
+PURPOSE:           
+RETURNS:
+RETURNS:
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+/*
+void parseArguments(int argc, char * argv[], CommandLineParameters params)
+{
+    for (int i = 1; i < argc; i++)
+    {
+        char * argument = argv[i];
+        if (argument[1] == 0)
+        {
+            displayErrorMessage();
+        }
+        argCollection[i - 1] = argument[1]; // Add letter to arg collectoin
+    }
+    argCollection[argc - 1] = '\0';  // Set the last element of the array to the null byte
+}
+*/
