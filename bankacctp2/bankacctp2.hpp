@@ -52,7 +52,7 @@ struct CommandLineParameters
     char P2[100];
     char R[100];
     char S[100];
-    char T[100];
+    double T;
     char W[100];
 };
 /*

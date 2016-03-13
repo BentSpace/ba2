@@ -8,7 +8,7 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: created rest of change something functions
+MODIFICATION HISTORY: created transfer
 
 Author                  Date               Version
 ---------------         ----------         --------------
@@ -46,6 +46,7 @@ void changeSSN(Record [], CommandLineParameters);
 void changeAreaCode(Record [], CommandLineParameters);
 void changePhoneNumber(Record [], CommandLineParameters);
 void changePassword(Record [], CommandLineParameters);
+void transfer(Record [], CommandLineParameters);
 
 // Global Constants
 const char SLASH = '/';
@@ -239,7 +240,7 @@ void matchArgCombination(int argc, char * argv[], char argCollection [],
     {
         if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
             if (validateAccountNumberPassword(params.N2, params.P2, bankAccountDatabase))
-                cout << "transfer(bankAccountDatabase, params)";
+                transfer(bankAccountDatabase, params);
     }
     else if (strcmp(argCollection, CHANGE_PASSWORD) == 0)
     {
@@ -472,7 +473,7 @@ void parseArguments(int argc, char * argv[], CommandLineParameters &params)
         if (argument[1] == 'S')
             strcpy(params.S, &argument[2]);
         if (argument[1] == 'T')
-            strcpy(params.T, &argument[2]);
+            params.T = atof(&argument[2]);
         if (argument[1] == 'W')
             strcpy(params.W, &argument[2]);
     }
@@ -566,4 +567,37 @@ void changePassword(Record bankAccountDatabase [], CommandLineParameters params)
 {
     int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
     strcpy(bankAccountDatabase[databaseIndex].password, params.W);
+}
+
+/* -----------------------------------------------------------------------------
+ FUNCTION NAME:     changeAreaCode()
+ PURPOSE:           Purpose of function ...
+ RETURNS:           What the function returns ... or ...
+ RETURNS:           Nothing (void function)
+ NOTES:             Put important usage notes here ...
+ ----------------------------------------------------------------------------- */
+void transfer(Record bankAccountDatabase [], CommandLineParameters params)
+{
+    if (params.N1 == params.N2)
+    {
+        cout << "\n\nCan't transfer money to the same account silly!\n";
+        exit(1);
+    }
+    int databaseIndexFrom = findAccountNumber(bankAccountDatabase, params.N1);
+    // If the transfer amount is less than 0 or greater than the balance
+    // Display error
+    if (params.T < 0 || params.T > bankAccountDatabase[databaseIndexFrom].balance)
+    {
+        cout << "\n\nInvalid transfer amount!\n";
+        exit(1);
+    }
+    int databaseIndexTo = findAccountNumber(bankAccountDatabase, params.N2);
+    bankAccountDatabase[databaseIndexFrom].balance -= params.T;
+    bankAccountDatabase[databaseIndexTo].balance += params.T;
+    cout << "\n\n$" << params.T << " successfully transfered from account #: "
+    << params.N1 << ", to account #: " << params.N2
+    << "\n\nThe new balance in the first account is: $"
+    << bankAccountDatabase[databaseIndexFrom].balance
+    << "\n\nThe new balance in the second account is: $"
+    << bankAccountDatabase[databaseIndexTo].balance;
 }
