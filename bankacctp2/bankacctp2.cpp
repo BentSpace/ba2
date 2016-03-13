@@ -8,11 +8,11 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: created change first last and middle
+MODIFICATION HISTORY: created rest of change something functions
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-12         Version 8.0
+Nathan Bertram          2016-03-12         Version 9.0
 
 ----------------------------------------------------------------------------- */
 
@@ -42,6 +42,10 @@ bool validateAccountNumberPassword(char [], char [], Record []);
 void changeFirstName(Record [], CommandLineParameters);
 void changeLastName(Record [], CommandLineParameters);
 void changeMiddleIntial(Record [], CommandLineParameters);
+void changeSSN(Record [], CommandLineParameters);
+void changeAreaCode(Record [], CommandLineParameters);
+void changePhoneNumber(Record [], CommandLineParameters);
+void changePassword(Record [], CommandLineParameters);
 
 // Global Constants
 const char SLASH = '/';
@@ -219,17 +223,17 @@ void matchArgCombination(int argc, char * argv[], char argCollection [],
     else if (strcmp(argCollection, CHANGE_SSN) == 0)
     {
         if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
-            cout << "changeSSN(bankAccountDatabase, params)";
+            changeSSN(bankAccountDatabase, params);
     }
     else if (strcmp(argCollection, CHANGE_AREA_CODE) == 0)
     {
         if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
-            cout << "changeAreaCode(bankAccountDatabase, params)";
+            changeAreaCode(bankAccountDatabase, params);
     }
     else if (strcmp(argCollection, CHANGE_PHONE_NUMBER) == 0)
     {
         if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
-            cout << "changePhoneNumber(bankAccountDatabase, params)";
+            changePhoneNumber(bankAccountDatabase, params);
     }
     else if (strcmp(argCollection, TRANSFER) == 0)
     {
@@ -240,7 +244,7 @@ void matchArgCombination(int argc, char * argv[], char argCollection [],
     else if (strcmp(argCollection, CHANGE_PASSWORD) == 0)
     {
         if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
-            cout << "changePassword(bankAccountDatabase, params)";
+            changePassword(bankAccountDatabase, params);
     }
     else if (strcmp(argCollection, PRODUCE_REPORT) == 0)
         cout << "produceReport(bankAccountDatabase, params)";
@@ -512,4 +516,54 @@ void changeMiddleIntial(Record bankAccountDatabase [], CommandLineParameters par
 {
     int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
     bankAccountDatabase[databaseIndex].middleInitial = params.M[0];
+}
+
+/* -----------------------------------------------------------------------------
+ FUNCTION NAME:     changeSSN()
+ PURPOSE:           Purpose of function ...
+ RETURNS:           What the function returns ... or ...
+ RETURNS:           Nothing (void function)
+ NOTES:             Put important usage notes here ...
+ ----------------------------------------------------------------------------- */
+void changeSSN(Record bankAccountDatabase [], CommandLineParameters params)
+{
+    int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
+    strcpy(bankAccountDatabase[databaseIndex].ssNum, params.S);
+}
+
+/* -----------------------------------------------------------------------------
+ FUNCTION NAME:     changeAreaCode()
+ PURPOSE:           Purpose of function ...
+ RETURNS:           What the function returns ... or ...
+ RETURNS:           Nothing (void function)
+ NOTES:             Put important usage notes here ...
+ ----------------------------------------------------------------------------- */
+void changeAreaCode(Record bankAccountDatabase [], CommandLineParameters params)
+{
+    int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
+    strcpy(bankAccountDatabase[databaseIndex].phoneNumAreaCode, params.A);
+}
+/* -----------------------------------------------------------------------------
+ FUNCTION NAME:     changeAreaCode()
+ PURPOSE:           Purpose of function ...
+ RETURNS:           What the function returns ... or ...
+ RETURNS:           Nothing (void function)
+ NOTES:             Put important usage notes here ...
+ ----------------------------------------------------------------------------- */
+void changePhoneNumber(Record bankAccountDatabase [], CommandLineParameters params)
+{
+    int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
+    strcpy(bankAccountDatabase[databaseIndex].phoneNum, params.H);
+}
+/* -----------------------------------------------------------------------------
+ FUNCTION NAME:     changeAreaCode()
+ PURPOSE:           Purpose of function ...
+ RETURNS:           What the function returns ... or ...
+ RETURNS:           Nothing (void function)
+ NOTES:             Put important usage notes here ...
+ ----------------------------------------------------------------------------- */
+void changePassword(Record bankAccountDatabase [], CommandLineParameters params)
+{
+    int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
+    strcpy(bankAccountDatabase[databaseIndex].password, params.W);
 }
