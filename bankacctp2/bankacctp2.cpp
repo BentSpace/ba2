@@ -8,11 +8,11 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: created transfer
+MODIFICATION HISTORY: created produceReport
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-12         Version 9.0
+Nathan Bertram          2016-03-12         Version 10.0
 
 ----------------------------------------------------------------------------- */
 
@@ -20,10 +20,12 @@ Nathan Bertram          2016-03-12         Version 9.0
 #include <cstring>
 #include <algorithm>
 #include <fstream>
+#include <iomanip>
 #include "bankacctp2.hpp"
 
 using std::cout;
 using std::endl;
+using std::setw;
 
 // Function Protypes
 void helpScreen();
@@ -47,6 +49,7 @@ void changeAreaCode(Record [], CommandLineParameters);
 void changePhoneNumber(Record [], CommandLineParameters);
 void changePassword(Record [], CommandLineParameters);
 void transfer(Record [], CommandLineParameters);
+void produceReport(Record [], CommandLineParameters);
 
 // Global Constants
 const char SLASH = '/';
@@ -248,7 +251,7 @@ void matchArgCombination(int argc, char * argv[], char argCollection [],
             changePassword(bankAccountDatabase, params);
     }
     else if (strcmp(argCollection, PRODUCE_REPORT) == 0)
-        cout << "produceReport(bankAccountDatabase, params)";
+        produceReport(bankAccountDatabase, params);
     else
         displayErrorMessage();
 }
@@ -578,7 +581,7 @@ void changePassword(Record bankAccountDatabase [], CommandLineParameters params)
  ----------------------------------------------------------------------------- */
 void transfer(Record bankAccountDatabase [], CommandLineParameters params)
 {
-    if (params.N1 == params.N2)
+    if (strcmp(params.N1, params.N2) == 0)
     {
         cout << "\n\nCan't transfer money to the same account silly!\n";
         exit(1);
@@ -600,4 +603,40 @@ void transfer(Record bankAccountDatabase [], CommandLineParameters params)
     << bankAccountDatabase[databaseIndexFrom].balance
     << "\n\nThe new balance in the second account is: $"
     << bankAccountDatabase[databaseIndexTo].balance;
+}
+
+/* -----------------------------------------------------------------------------
+ FUNCTION NAME:     produceReport()
+ PURPOSE:           Purpose of function ...
+ RETURNS:           What the function returns ... or ...
+ RETURNS:           Nothing (void function)
+ NOTES:             Put important usage notes here ...
+ ----------------------------------------------------------------------------- */
+void produceReport(Record bankAccountDatabase [], CommandLineParameters params)
+{
+    std::ofstream reportFile;
+    
+    reportFile.open(params.R);
+    int i = 0;
+    
+    reportFile
+    << "-------    ----        -----     --    ---------    ------------    -------\n"
+    << "Account    Last        First     MI    SS           Phone           Account\n"
+    << "Number     Name        Name            Number       Number          Balance\n"
+    << "-------    ----        -----     --    ---------    ------------    -------\n";
+    
+    while (bankAccountDatabase[i].accountNum[0] != 0)
+    {
+        reportFile << std::left;
+        reportFile << std::setw(11) << bankAccountDatabase[i].accountNum;
+        reportFile << std::setw(12) << bankAccountDatabase[i].lastName;
+        reportFile << std::setw(10) << bankAccountDatabase[i].firstName;
+        reportFile << std::setw(6) << bankAccountDatabase[i].middleInitial;
+        reportFile << std::setw(13) << bankAccountDatabase[i].ssNum;
+        reportFile << "(" << bankAccountDatabase[i].phoneNumAreaCode << ")" << std::setw(12) << bankAccountDatabase[i].phoneNum;
+        reportFile << bankAccountDatabase[i].balance;
+        reportFile << endl;
+        i++;
+    }
+    reportFile.close();
 }
