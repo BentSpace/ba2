@@ -8,11 +8,11 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: created validateAccountNumberPassword and displayInfo
+MODIFICATION HISTORY: created parseArguments and updated readFromDatabaseFile
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-11         Version 6.0
+Nathan Bertram          2016-03-12         Version 7.0
 
 ----------------------------------------------------------------------------- */
 
@@ -33,10 +33,10 @@ void collectFirstCharArgs(int, char * [], char []);
 void sortArgCollection(char [], int);
 void matchArgCombination(int, char * [], char [],  Record []);
 void displayErrorMessage();
-void readFromDatabaseFile(Record []);
+void readFromDatabaseFile(Record [], char []);
 void displayInfo(int, char * [], Record []);
 int findAccountNumber(Record [], char []);
-void parseArguments(int, char * [], CommandLineParameters);
+void parseArguments(int, char * [], CommandLineParameters&);
 bool validateAccountNumberPassword(char [], char [], Record []);
 
 // Global Constants
@@ -66,15 +66,16 @@ int main(int argc, char * argv[]) {
     char argCollection [argc];
     Record bankAccountDatabase [100] = { 0 };
     CommandLineParameters params = { 0 };
-    char accountNumber [] = "F123C";
+    //char accountNumber [] = "F123C";
     
     //cout << "argc = " << argc << endl;
-    readFromDatabaseFile(bankAccountDatabase);
+    
     checkForNoArgs(argc);
     checkForSlashes(argc, argv);
     collectFirstCharArgs(argc, argv, argCollection);
     sortArgCollection(argCollection, argc);
-    //parseArguments(argc, argv, params);
+    parseArguments(argc, argv, params);
+    readFromDatabaseFile(bankAccountDatabase, params.D);
     matchArgCombination(argc, argv, argCollection, bankAccountDatabase);
     //findAccountNumber(bankAccountDatabase, accountNumber);
     return 0;
@@ -229,48 +230,30 @@ RETURNS:           What the function returns ... or ...
 RETURNS:           Nothing (void function)
 NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
-void readFromDatabaseFile(Record bankAccountDatabase [])
+void readFromDatabaseFile(Record bankAccountDatabase [], char databaseName [])
 {
-    char dataFileName [] = "database.txt";
     char lineBuffer [100]; // A place to store the one line from the database file
     std::ifstream dataFile;
     int i = 0; // counter
     
-    dataFile.open(dataFileName);
-    
-    while (dataFile >> bankAccountDatabase[i].firstName) {
-        dataFile >> bankAccountDatabase[i].lastName;
-        dataFile >> bankAccountDatabase[i].middleInitial;
-        dataFile >> bankAccountDatabase[i].ssNum;
-        dataFile >> bankAccountDatabase[i].phoneNumAreaCode;
-        dataFile >> bankAccountDatabase[i].phoneNum;
-        dataFile >> bankAccountDatabase[i].balance;
-        dataFile >> bankAccountDatabase[i].accountNum;
-        dataFile >> bankAccountDatabase[i].password;
-//        cout << bankAccountDatabase[i].firstName << endl;
-//        cout << bankAccountDatabase[i].lastName << endl;
-//        cout << bankAccountDatabase[i].middleInitial << endl;
-//        cout << bankAccountDatabase[i].ssNum << endl;
-//        cout << bankAccountDatabase[i].phoneNumAreaCode << endl;
-//        cout << bankAccountDatabase[i].phoneNum << endl;
-//        cout << bankAccountDatabase[i].balance << endl;
-//        cout << bankAccountDatabase[i].accountNum << endl;
-//        cout << bankAccountDatabase[i].password << endl;
-        i++;
+    dataFile.open(databaseName);
+    if (dataFile)
+    {
+        while (dataFile >> bankAccountDatabase[i].firstName) {
+            dataFile >> bankAccountDatabase[i].lastName;
+            dataFile >> bankAccountDatabase[i].middleInitial;
+            dataFile >> bankAccountDatabase[i].ssNum;
+            dataFile >> bankAccountDatabase[i].phoneNumAreaCode;
+            dataFile >> bankAccountDatabase[i].phoneNum;
+            dataFile >> bankAccountDatabase[i].balance;
+            dataFile >> bankAccountDatabase[i].accountNum;
+            dataFile >> bankAccountDatabase[i].password;
+            i++;
+        }
     }
-//    for (int j = 0; j < 100; j++)
-//    {
-//        cout << bankAccountDatabase[j].firstName << endl;
-//        cout << bankAccountDatabase[j].lastName << endl;
-//        cout << bankAccountDatabase[j].middleInitial << endl;
-//        cout << bankAccountDatabase[j].ssNum << endl;
-//        cout << bankAccountDatabase[j].phoneNumAreaCode << endl;
-//        cout << bankAccountDatabase[j].phoneNum << endl;
-//        cout << bankAccountDatabase[j].balance << endl;
-//        cout << bankAccountDatabase[j].accountNum << endl;
-//        cout << bankAccountDatabase[j].password << endl;
-//    }
-    
+    else
+        cout << "\n\nError opening the database file.\n";
+
     dataFile.close();
 }
 
@@ -292,6 +275,7 @@ void displayInfo(int argc, char * argv[], Record bankAccountDatabase [])
     for (int i = 1; i < argc; i++)
     {
         char * argument = argv[i];
+        
         if (argument[1] == 'D')
             strcpy(databaseName, &argument[2]);
         if (argument[1] == 'N')
@@ -386,18 +370,65 @@ RETURNS:
 RETURNS:
 NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
-/*
-void parseArguments(int argc, char * argv[], CommandLineParameters params)
+
+void parseArguments(int argc, char * argv[], CommandLineParameters &params)
 {
+    bool foundFirstAccountNumber = false;
+    bool foundFirstPassword = false;
+    
     for (int i = 1; i < argc; i++)
     {
         char * argument = argv[i];
-        if (argument[1] == 0)
+        
+        if (argument[1] == '?')
+            if (argument[2] != 0)
+                displayErrorMessage();
+        if (argument[1] == 'A')
+            strcpy(params.A, &argument[2]);
+        if (argument[1] == 'D')
+            strcpy(params.D, &argument[2]);
+
+        if (argument[1] == 'F')
+            strcpy(params.F, &argument[2]);
+        if (argument[1] == 'H')
+            strcpy(params.H, &argument[2]);
+        if (argument[1] == 'I')
+            if (argument[2] != 0)
+                displayErrorMessage();
+        if (argument[1] == 'L')
+            strcpy(params.L, &argument[2]);
+        if (argument[1] == 'M')
+            strcpy(params.M, &argument[2]);
+        if (argument[1] == 'N')
         {
-            displayErrorMessage();
+            if (foundFirstAccountNumber)
+                strcpy(params.N2, &argument[2]);
+            else
+            {
+                strcpy(params.N1, &argument[2]);
+                foundFirstAccountNumber = true;
+            }
+            
         }
-        argCollection[i - 1] = argument[1]; // Add letter to arg collectoin
+        if (argument[1] == 'P')
+        {
+            if (foundFirstPassword)
+                strcpy(params.P2, &argument[2]);
+            else
+            {
+                strcpy(params.P1, &argument[2]);
+                foundFirstPassword = true;
+            }
+            
+        }
+        if (argument[1] == 'R')
+            strcpy(params.R, &argument[2]);
+        if (argument[1] == 'S')
+            strcpy(params.S, &argument[2]);
+        if (argument[1] == 'T')
+            strcpy(params.T, &argument[2]);
+        if (argument[1] == 'W')
+            strcpy(params.W, &argument[2]);
     }
-    argCollection[argc - 1] = '\0';  // Set the last element of the array to the null byte
+    
 }
-*/

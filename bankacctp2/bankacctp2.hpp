@@ -40,16 +40,16 @@ struct Record
 // Holds anything user typed as part command line arguments
 struct CommandLineParameters
 {
-    char Q[100];
     char A[100];
     char D[100];
     char F[100];
     char H[100];
-    char I[100];
     char L[100];
     char M[100];
-    char N[100];
-    char P[100];
+    char N1[100];
+    char N2[100];
+    char P1[100];
+    char P2[100];
     char R[100];
     char S[100];
     char T[100];
