@@ -8,11 +8,11 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: created parseArguments and updated readFromDatabaseFile
+MODIFICATION HISTORY: created change first last and middle
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-12         Version 7.0
+Nathan Bertram          2016-03-12         Version 8.0
 
 ----------------------------------------------------------------------------- */
 
@@ -31,13 +31,17 @@ void checkForNoArgs(int);
 void checkForSlashes(int, char * []);
 void collectFirstCharArgs(int, char * [], char []);
 void sortArgCollection(char [], int);
-void matchArgCombination(int, char * [], char [],  Record []);
+void matchArgCombination(int, char * [], char [],  Record [],
+                         CommandLineParameters);
 void displayErrorMessage();
 void readFromDatabaseFile(Record [], char []);
 void displayInfo(int, char * [], Record []);
 int findAccountNumber(Record [], char []);
 void parseArguments(int, char * [], CommandLineParameters&);
 bool validateAccountNumberPassword(char [], char [], Record []);
+void changeFirstName(Record [], CommandLineParameters);
+void changeLastName(Record [], CommandLineParameters);
+void changeMiddleIntial(Record [], CommandLineParameters);
 
 // Global Constants
 const char SLASH = '/';
@@ -76,8 +80,20 @@ int main(int argc, char * argv[]) {
     sortArgCollection(argCollection, argc);
     parseArguments(argc, argv, params);
     readFromDatabaseFile(bankAccountDatabase, params.D);
-    matchArgCombination(argc, argv, argCollection, bankAccountDatabase);
+    matchArgCombination(argc, argv, argCollection, bankAccountDatabase, params);
     //findAccountNumber(bankAccountDatabase, accountNumber);
+    for (int j = 0; j < 3; j++)
+        {
+            cout << bankAccountDatabase[j].lastName << endl;
+            cout << bankAccountDatabase[j].firstName << endl;
+            cout << bankAccountDatabase[j].middleInitial << endl;
+            cout << bankAccountDatabase[j].ssNum << endl;
+            cout << bankAccountDatabase[j].phoneNumAreaCode << endl;
+            cout << bankAccountDatabase[j].phoneNum << endl;
+            cout << bankAccountDatabase[j].balance << endl;
+            cout << bankAccountDatabase[j].accountNum << endl;
+            cout << bankAccountDatabase[j].password << endl;
+        }
     return 0;
 }
 
@@ -175,30 +191,59 @@ RETURNS:           What the function returns ... or ...
 RETURNS:           Nothing (void function)
 NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
-void matchArgCombination(int argc, char * argv[], char argCollection [], Record bankAccountDatabase [])
+void matchArgCombination(int argc, char * argv[], char argCollection [],
+                         Record bankAccountDatabase [], CommandLineParameters params)
 {
     if (strcmp(argCollection, HELP) == 0)
         helpScreen();
     else if (strcmp(argCollection, DISPLAY_INFO) == 0)
-        displayInfo(argc, argv, bankAccountDatabase);
+    {
+        if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
+            displayInfo(argc, argv, bankAccountDatabase);
+    }
     else if (strcmp(argCollection, CHANGE_FIRST_NAME) == 0)
-        cout << "changeFirstName()";
+    {
+        if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
+            changeFirstName(bankAccountDatabase, params);
+    }
     else if (strcmp(argCollection, CHANGE_LAST_NAME) == 0)
-        cout << "changeLastName()";
+    {
+        if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
+            changeLastName(bankAccountDatabase, params);
+    }
     else if (strcmp(argCollection, CHANGE_MIDDLE_INTIAL) == 0)
-        cout << "changeMiddleIntial()";
+    {
+        if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
+            changeMiddleIntial(bankAccountDatabase, params);
+    }
     else if (strcmp(argCollection, CHANGE_SSN) == 0)
-        cout << "changeSSN()";
+    {
+        if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
+            cout << "changeSSN(bankAccountDatabase, params)";
+    }
     else if (strcmp(argCollection, CHANGE_AREA_CODE) == 0)
-        cout << "changeAreaCode()";
+    {
+        if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
+            cout << "changeAreaCode(bankAccountDatabase, params)";
+    }
     else if (strcmp(argCollection, CHANGE_PHONE_NUMBER) == 0)
-        cout << "changePhoneNumber()";
+    {
+        if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
+            cout << "changePhoneNumber(bankAccountDatabase, params)";
+    }
     else if (strcmp(argCollection, TRANSFER) == 0)
-        cout << "transfer()";
+    {
+        if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
+            if (validateAccountNumberPassword(params.N2, params.P2, bankAccountDatabase))
+                cout << "transfer(bankAccountDatabase, params)";
+    }
     else if (strcmp(argCollection, CHANGE_PASSWORD) == 0)
-        cout << "changePassword()";
+    {
+        if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
+            cout << "changePassword(bankAccountDatabase, params)";
+    }
     else if (strcmp(argCollection, PRODUCE_REPORT) == 0)
-        cout << "produceReport()";
+        cout << "produceReport(bankAccountDatabase, params)";
     else
         displayErrorMessage();
 }
@@ -232,15 +277,15 @@ NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
 void readFromDatabaseFile(Record bankAccountDatabase [], char databaseName [])
 {
-    char lineBuffer [100]; // A place to store the one line from the database file
     std::ifstream dataFile;
     int i = 0; // counter
     
     dataFile.open(databaseName);
     if (dataFile)
     {
-        while (dataFile >> bankAccountDatabase[i].firstName) {
-            dataFile >> bankAccountDatabase[i].lastName;
+        while (dataFile >> bankAccountDatabase[i].lastName)
+        {
+            dataFile >> bankAccountDatabase[i].firstName;
             dataFile >> bankAccountDatabase[i].middleInitial;
             dataFile >> bankAccountDatabase[i].ssNum;
             dataFile >> bankAccountDatabase[i].phoneNumAreaCode;
@@ -283,20 +328,17 @@ void displayInfo(int argc, char * argv[], Record bankAccountDatabase [])
         if (argument[1] == 'P')
             strcpy(password, &argument[2]);
     }
-    
-    if (validateAccountNumberPassword(accountNumber, password, bankAccountDatabase))
-    {
-        databaseIndex = findAccountNumber(bankAccountDatabase, accountNumber);
-        cout << bankAccountDatabase[databaseIndex].firstName << endl;
-        cout << bankAccountDatabase[databaseIndex].lastName << endl;
-        cout << bankAccountDatabase[databaseIndex].middleInitial << endl;
-        cout << bankAccountDatabase[databaseIndex].ssNum << endl;
-        cout << bankAccountDatabase[databaseIndex].phoneNumAreaCode << endl;
-        cout << bankAccountDatabase[databaseIndex].phoneNum << endl;
-        cout << bankAccountDatabase[databaseIndex].balance << endl;
-        cout << bankAccountDatabase[databaseIndex].accountNum << endl;
-        cout << bankAccountDatabase[databaseIndex].password << endl;
-    }
+
+    databaseIndex = findAccountNumber(bankAccountDatabase, accountNumber);
+    cout << bankAccountDatabase[databaseIndex].firstName << endl;
+    cout << bankAccountDatabase[databaseIndex].lastName << endl;
+    cout << bankAccountDatabase[databaseIndex].middleInitial << endl;
+    cout << bankAccountDatabase[databaseIndex].ssNum << endl;
+    cout << bankAccountDatabase[databaseIndex].phoneNumAreaCode << endl;
+    cout << bankAccountDatabase[databaseIndex].phoneNum << endl;
+    cout << bankAccountDatabase[databaseIndex].balance << endl;
+    cout << bankAccountDatabase[databaseIndex].accountNum << endl;
+    cout << bankAccountDatabase[databaseIndex].password << endl;
 }
 
 /* -----------------------------------------------------------------------------
@@ -431,4 +473,43 @@ void parseArguments(int argc, char * argv[], CommandLineParameters &params)
             strcpy(params.W, &argument[2]);
     }
     
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     changeFirstName()
+PURPOSE:           Purpose of function ...
+RETURNS:           What the function returns ... or ...
+RETURNS:           Nothing (void function)
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+void changeFirstName(Record bankAccountDatabase [], CommandLineParameters params)
+{
+    int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
+    strcpy(bankAccountDatabase[databaseIndex].firstName, params.F);
+}
+
+/* -----------------------------------------------------------------------------
+ FUNCTION NAME:     changeLastName()
+ PURPOSE:           Purpose of function ...
+ RETURNS:           What the function returns ... or ...
+ RETURNS:           Nothing (void function)
+ NOTES:             Put important usage notes here ...
+ ----------------------------------------------------------------------------- */
+void changeLastName(Record bankAccountDatabase [], CommandLineParameters params)
+{
+    int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
+    strcpy(bankAccountDatabase[databaseIndex].lastName, params.L);
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     changeMiddleIntial()
+PURPOSE:           Purpose of function ...
+RETURNS:           What the function returns ... or ...
+RETURNS:           Nothing (void function)
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+void changeMiddleIntial(Record bankAccountDatabase [], CommandLineParameters params)
+{
+    int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
+    bankAccountDatabase[databaseIndex].middleInitial = params.M[0];
 }
