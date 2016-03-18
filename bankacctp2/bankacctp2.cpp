@@ -8,11 +8,11 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: created produceReport
+MODIFICATION HISTORY: fixed DisplayInfo
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-12         Version 10.0
+Nathan Bertram          2016-03-17         Version 11.0
 
 ----------------------------------------------------------------------------- */
 
@@ -37,7 +37,7 @@ void matchArgCombination(int, char * [], char [],  Record [],
                          CommandLineParameters);
 void displayErrorMessage();
 void readFromDatabaseFile(Record [], char []);
-void displayInfo(int, char * [], Record []);
+void displayInfo(Record [], CommandLineParameters);
 int findAccountNumber(Record [], char []);
 void parseArguments(int, char * [], CommandLineParameters&);
 bool validateAccountNumberPassword(char [], char [], Record []);
@@ -50,6 +50,7 @@ void changePhoneNumber(Record [], CommandLineParameters);
 void changePassword(Record [], CommandLineParameters);
 void transfer(Record [], CommandLineParameters);
 void produceReport(Record [], CommandLineParameters);
+void saveDatabase(Record []);
 
 // Global Constants
 const char SLASH = '/';
@@ -80,6 +81,7 @@ int main(int argc, char * argv[]) {
     CommandLineParameters params = { 0 };
     //char accountNumber [] = "F123C";
     
+    
     //cout << "argc = " << argc << endl;
     
     checkForNoArgs(argc);
@@ -89,7 +91,7 @@ int main(int argc, char * argv[]) {
     parseArguments(argc, argv, params);
     readFromDatabaseFile(bankAccountDatabase, params.D);
     matchArgCombination(argc, argv, argCollection, bankAccountDatabase, params);
-    //findAccountNumber(bankAccountDatabase, accountNumber);
+    /*
     for (int j = 0; j < 3; j++)
         {
             cout << bankAccountDatabase[j].lastName << endl;
@@ -102,6 +104,7 @@ int main(int argc, char * argv[]) {
             cout << bankAccountDatabase[j].accountNum << endl;
             cout << bankAccountDatabase[j].password << endl;
         }
+    */
     return 0;
 }
 
@@ -127,7 +130,28 @@ NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
 void helpScreen()
 {
-    cout << "I'm a help screen";
+
+    std::ifstream helpFile;
+    helpFile.open("helpFile.txt");
+    
+    char getdata[10000];
+    helpFile.read(getdata, sizeof getdata);
+    if (helpFile.eof())
+    {
+        // got the whole file...
+        size_t bytes_really_read = helpFile.gcount();
+        
+    }
+    else if (helpFile.fail())
+    {
+        // some other error...
+    }
+    else
+    {
+        // getdata must be full, but the file is larger...
+        
+    }
+    cout << getdata;
     exit(0);
 }
 
@@ -207,7 +231,7 @@ void matchArgCombination(int argc, char * argv[], char argCollection [],
     else if (strcmp(argCollection, DISPLAY_INFO) == 0)
     {
         if (validateAccountNumberPassword(params.N1, params.P1, bankAccountDatabase))
-            displayInfo(argc, argv, bankAccountDatabase);
+            displayInfo(bankAccountDatabase, params);
     }
     else if (strcmp(argCollection, CHANGE_FIRST_NAME) == 0)
     {
@@ -317,36 +341,21 @@ RETURNS:           What the function returns ... or ...
 RETURNS:           Nothing (void function)
 NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
-void displayInfo(int argc, char * argv[], Record bankAccountDatabase [])
+void displayInfo(Record bankAccountDatabase [], CommandLineParameters params)
 {
-    //char accountNumber [] = "C123A";
-    char databaseName [100] = {0};
-    char accountNumber [100] = {0};
-    char password [100] = {0};
     int databaseIndex;
-    
-    for (int i = 1; i < argc; i++)
-    {
-        char * argument = argv[i];
-        
-        if (argument[1] == 'D')
-            strcpy(databaseName, &argument[2]);
-        if (argument[1] == 'N')
-            strcpy(accountNumber, &argument[2]);
-        if (argument[1] == 'P')
-            strcpy(password, &argument[2]);
-    }
 
-    databaseIndex = findAccountNumber(bankAccountDatabase, accountNumber);
-    cout << bankAccountDatabase[databaseIndex].firstName << endl;
-    cout << bankAccountDatabase[databaseIndex].lastName << endl;
-    cout << bankAccountDatabase[databaseIndex].middleInitial << endl;
-    cout << bankAccountDatabase[databaseIndex].ssNum << endl;
-    cout << bankAccountDatabase[databaseIndex].phoneNumAreaCode << endl;
-    cout << bankAccountDatabase[databaseIndex].phoneNum << endl;
-    cout << bankAccountDatabase[databaseIndex].balance << endl;
-    cout << bankAccountDatabase[databaseIndex].accountNum << endl;
-    cout << bankAccountDatabase[databaseIndex].password << endl;
+    databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
+    cout << "Name: " << bankAccountDatabase[databaseIndex].firstName << " "
+    << bankAccountDatabase[databaseIndex].middleInitial << " "
+    << bankAccountDatabase[databaseIndex].lastName << endl;
+    cout << "Social Security Number: " << bankAccountDatabase[databaseIndex].ssNum << endl;
+    cout << "Phone Number: (" << bankAccountDatabase[databaseIndex].phoneNumAreaCode
+    << ") " << bankAccountDatabase[databaseIndex].phoneNum << endl;
+    cout.precision(2);
+    cout << "Balance: $" << std::fixed << bankAccountDatabase[databaseIndex].balance << endl;
+    cout << "Account #: " << bankAccountDatabase[databaseIndex].accountNum << endl;
+    cout << "Password: " << bankAccountDatabase[databaseIndex].password << endl;
 }
 
 /* -----------------------------------------------------------------------------
@@ -639,4 +648,16 @@ void produceReport(Record bankAccountDatabase [], CommandLineParameters params)
         i++;
     }
     reportFile.close();
+}
+
+/* -----------------------------------------------------------------------------
+FUNCTION NAME:     saveDatabase()
+PURPOSE:           Purpose of function ...
+RETURNS:           What the function returns ... or ...
+RETURNS:           Nothing (void function)
+NOTES:             Put important usage notes here ...
+----------------------------------------------------------------------------- */
+void saveDatabase(Record bankAccountDatabase [])
+{
+    
 }
