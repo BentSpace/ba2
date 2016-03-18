@@ -8,11 +8,11 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: fixed DisplayInfo
+MODIFICATION HISTORY: created saveDatabase()
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-17         Version 11.0
+Nathan Bertram          2016-03-17         Version 12.0
 
 ----------------------------------------------------------------------------- */
 
@@ -50,7 +50,7 @@ void changePhoneNumber(Record [], CommandLineParameters);
 void changePassword(Record [], CommandLineParameters);
 void transfer(Record [], CommandLineParameters);
 void produceReport(Record [], CommandLineParameters);
-void saveDatabase(Record []);
+void saveDatabase(Record [], CommandLineParameters);
 
 // Global Constants
 const char SLASH = '/';
@@ -91,6 +91,7 @@ int main(int argc, char * argv[]) {
     parseArguments(argc, argv, params);
     readFromDatabaseFile(bankAccountDatabase, params.D);
     matchArgCombination(argc, argv, argCollection, bankAccountDatabase, params);
+    saveDatabase(bankAccountDatabase, params);
     /*
     for (int j = 0; j < 3; j++)
         {
@@ -657,7 +658,25 @@ RETURNS:           What the function returns ... or ...
 RETURNS:           Nothing (void function)
 NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
-void saveDatabase(Record bankAccountDatabase [])
+void saveDatabase(Record bankAccountDatabase [], CommandLineParameters params)
 {
+    std::ofstream dataFile;
+    int i = 0;
     
+    dataFile.open(params.D);
+    
+    while (bankAccountDatabase[i].lastName[0] != 0)
+    {
+        dataFile << bankAccountDatabase[i].lastName << endl;
+        dataFile << bankAccountDatabase[i].firstName << endl;
+        dataFile << bankAccountDatabase[i].middleInitial << endl;
+        dataFile << bankAccountDatabase[i].ssNum << endl;
+        dataFile << bankAccountDatabase[i].phoneNumAreaCode << endl;
+        dataFile << bankAccountDatabase[i].phoneNum << endl;
+        dataFile << bankAccountDatabase[i].balance << endl;
+        dataFile << bankAccountDatabase[i].accountNum << endl;
+        dataFile << bankAccountDatabase[i].password << endl << endl;
+        i++;
+    }
+    dataFile.close();
 }
