@@ -8,11 +8,11 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: created saveDatabase()
+MODIFICATION HISTORY: added argument validation
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-17         Version 12.0
+Nathan Bertram          2016-03-18         Version 13.0
 
 ----------------------------------------------------------------------------- */
 
@@ -140,7 +140,7 @@ void helpScreen()
     if (helpFile.eof())
     {
         // got the whole file...
-        size_t bytes_really_read = helpFile.gcount();
+        //size_t bytes_really_read = helpFile.gcount();
         
     }
     else if (helpFile.fail())
@@ -443,54 +443,218 @@ void parseArguments(int argc, char * argv[], CommandLineParameters &params)
         if (argument[1] == '?')
             if (argument[2] != 0)
                 displayErrorMessage();
+        
+        // If second character in argument is 'A'
         if (argument[1] == 'A')
+        {
+            // Check to make sure argument is exactly 5 characters
+            if (strlen(argument) != 5)
+                displayErrorMessage();
+            // check to see if all characters are digits
+            for (int i = 2; i < strlen(argument); i++)
+            {
+                if (!isdigit(argument[i]))
+                    displayErrorMessage();
+            }
+            // Argument is valid, copy to params struct
             strcpy(params.A, &argument[2]);
+        }
+        
+        // If second character in argument is 'D'
         if (argument[1] == 'D')
+        {
+            // Check to make sure argument is less than 99 characters
+            if (strlen(argument) > 99)
+                displayErrorMessage();
+            // Argument is valid, copy to params struct
             strcpy(params.D, &argument[2]);
-
+        }
+        
+        // If second character in argument is 'F'
         if (argument[1] == 'F')
+        {
+            // Check to make sure argument is less than 99 characters
+            if (strlen(argument) > 99)
+                displayErrorMessage();
+            // check to see if all characters are letters
+            for (int i = 2; i < strlen(argument); i++)
+            {
+                if (!isalpha(argument[i]))
+                    displayErrorMessage();
+            }
+            // Argument is valid, copy to params struct
             strcpy(params.F, &argument[2]);
+        }
+        
+        // If second character in argument is 'H'
         if (argument[1] == 'H')
+        {
+            // Check to make sure argument is exactly 9 characters
+            if (strlen(argument) != 9)
+                displayErrorMessage();
+            // check to see if all characters are digits
+            for (int i = 2; i < strlen(argument); i++)
+            {
+                if (!isdigit(argument[i]))
+                    displayErrorMessage();
+            }
+            // Argument is valid, copy to params struct
             strcpy(params.H, &argument[2]);
+        }
+        
+        // If second character in argument is 'I'
         if (argument[1] == 'I')
+        {
+            // Check to make sure argument is exactly 2 characters
             if (argument[2] != 0)
                 displayErrorMessage();
+        }
+        
+        // If second character in argument is 'L'
         if (argument[1] == 'L')
+        {
+            // Check to make sure argument is less than 99 characters
+            if (strlen(argument) > 99)
+                displayErrorMessage();
+            // check to see if all characters are letters
+            for (int i = 2; i < strlen(argument); i++)
+            {
+                if (!isalpha(argument[i]))
+                    displayErrorMessage();
+            }
+            // Argument is valid, copy to params struct
             strcpy(params.L, &argument[2]);
+        }
+        
+        // If second character in argument is 'M'
         if (argument[1] == 'M')
-            strcpy(params.M, &argument[2]);
+        {
+            // Check to make sure argument is exactly 3 characters
+            if (strlen(argument) != 3)
+                displayErrorMessage();
+            // check to see if all characters are letters
+            for (int i = 2; i < strlen(argument); i++)
+            {
+                if (!isalpha(argument[i]))
+                    displayErrorMessage();
+            }
+            // Argument is valid, copy to params struct
+            params.M = argument[2];
+        }
+        
+        // If second character in argument is 'N'
         if (argument[1] == 'N')
         {
+            
             if (foundFirstAccountNumber)
+            {
+                // Check to make sure argument is exactly (5 + 2) characters
+                if (strlen(argument) != (5 + 2))
+                    displayErrorMessage();
                 strcpy(params.N2, &argument[2]);
+            }
             else
             {
+                // Check to make sure argument is exactly (5 + 2) characters
+                if (strlen(argument) != (5 + 2))
+                    displayErrorMessage();
                 strcpy(params.N1, &argument[2]);
                 foundFirstAccountNumber = true;
             }
             
         }
+        
+        // If second character in argument is 'P'
         if (argument[1] == 'P')
         {
             if (foundFirstPassword)
+            {
+                // Check to make sure argument is exactly (6 + 2) characters
+                if (strlen(argument) != (6 + 2))
+                    displayErrorMessage();
                 strcpy(params.P2, &argument[2]);
+            }
             else
             {
+                // Check to make sure argument is exactly (6 + 2) characters
+                if (strlen(argument) != (6 + 2))
+                    displayErrorMessage();
                 strcpy(params.P1, &argument[2]);
                 foundFirstPassword = true;
             }
             
         }
+        
+        // If second character in argument is 'R'
         if (argument[1] == 'R')
+        {
+            // Check to make sure argument is less than 99 characters
+            if (strlen(argument) > 99)
+                displayErrorMessage();
             strcpy(params.R, &argument[2]);
+        }
+        
+        // If second character in argument is 'S'
         if (argument[1] == 'S')
+        {
+            // Check to make sure argument is exactly 9 + 2 characters
+            if (strlen(argument) != (9 + 2))
+                displayErrorMessage();
+            // check to see if all characters are digits
+            for (int i = 2; i < strlen(argument); i++)
+            {
+                if (!isdigit(argument[i]))
+                    displayErrorMessage();
+            }
+            // Argument is valid, copy to params struct
             strcpy(params.S, &argument[2]);
+        }
+        
+        // If second character in argument is 'T'
         if (argument[1] == 'T')
+        {
+            bool foundAPeriod = false;
+            // check to see if all characters are digits or a '.'
+            for (int i = 2; i < strlen(argument); i++)
+            {
+                if (argument[i] != '.')
+                {
+                    // if haven't found a period yet
+                    if (!foundAPeriod)
+                        foundAPeriod = true;
+                    else
+                        displayErrorMessage();
+                }
+                else if (!isdigit(argument[i]))
+                    displayErrorMessage();
+            }
             params.T = atof(&argument[2]);
+        }
+        
+        // If second character in argument is 'W'
         if (argument[1] == 'W')
+        {
+            // Check to make sure argument is exactly 6 + 2 characters
+            if (strlen(argument) != (6 + 2))
+                displayErrorMessage();
+            // check to see if all characters are digits or uppercase letters
+            for (int i = 2; i < strlen(argument); i++)
+            {
+                // if character is a letter
+                if (isalpha(argument[i]))
+                {
+                    // if character is not uppercase
+                    if (!isupper(argument[i]))
+                        displayErrorMessage();
+                }
+                // if character in not a digit
+                else if (!isdigit(argument[i]))
+                    displayErrorMessage();
+            }
+            // Argument is valid, copy to params struct
             strcpy(params.W, &argument[2]);
-    }
-    
+        }
+    } // end of for loop
 }
 
 /* -----------------------------------------------------------------------------
@@ -503,6 +667,7 @@ NOTES:             Put important usage notes here ...
 void changeFirstName(Record bankAccountDatabase [], CommandLineParameters params)
 {
     int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
+    //if (strlen(params.F < 1
     strcpy(bankAccountDatabase[databaseIndex].firstName, params.F);
 }
 
@@ -529,7 +694,7 @@ NOTES:             Put important usage notes here ...
 void changeMiddleIntial(Record bankAccountDatabase [], CommandLineParameters params)
 {
     int databaseIndex = findAccountNumber(bankAccountDatabase, params.N1);
-    bankAccountDatabase[databaseIndex].middleInitial = params.M[0];
+    bankAccountDatabase[databaseIndex].middleInitial = params.M;
 }
 
 /* -----------------------------------------------------------------------------
@@ -627,28 +792,33 @@ void produceReport(Record bankAccountDatabase [], CommandLineParameters params)
     std::ofstream reportFile;
     
     reportFile.open(params.R);
-    int i = 0;
-    
-    reportFile
-    << "-------    ----        -----     --    ---------    ------------    -------\n"
-    << "Account    Last        First     MI    SS           Phone           Account\n"
-    << "Number     Name        Name            Number       Number          Balance\n"
-    << "-------    ----        -----     --    ---------    ------------    -------\n";
-    
-    while (bankAccountDatabase[i].accountNum[0] != 0)
+    if (reportFile) // If the reportFile succesfully opens
     {
-        reportFile << std::left;
-        reportFile << std::setw(11) << bankAccountDatabase[i].accountNum;
-        reportFile << std::setw(12) << bankAccountDatabase[i].lastName;
-        reportFile << std::setw(10) << bankAccountDatabase[i].firstName;
-        reportFile << std::setw(6) << bankAccountDatabase[i].middleInitial;
-        reportFile << std::setw(13) << bankAccountDatabase[i].ssNum;
-        reportFile << "(" << bankAccountDatabase[i].phoneNumAreaCode << ")" << std::setw(12) << bankAccountDatabase[i].phoneNum;
-        reportFile << bankAccountDatabase[i].balance;
-        reportFile << endl;
-        i++;
+        int i = 0;
+        
+        reportFile
+        << "-------    ----        -----     --    ---------    ------------    -------\n"
+        << "Account    Last        First     MI    SS           Phone           Account\n"
+        << "Number     Name        Name            Number       Number          Balance\n"
+        << "-------    ----        -----     --    ---------    ------------    -------\n";
+        
+        while (bankAccountDatabase[i].accountNum[0] != 0)
+        {
+            reportFile << std::left;
+            reportFile << std::setw(11) << bankAccountDatabase[i].accountNum;
+            reportFile << std::setw(12) << bankAccountDatabase[i].lastName;
+            reportFile << std::setw(10) << bankAccountDatabase[i].firstName;
+            reportFile << std::setw(6) << bankAccountDatabase[i].middleInitial;
+            reportFile << std::setw(13) << bankAccountDatabase[i].ssNum;
+            reportFile << "(" << bankAccountDatabase[i].phoneNumAreaCode << ")" << std::setw(12) << bankAccountDatabase[i].phoneNum;
+            reportFile << bankAccountDatabase[i].balance;
+            reportFile << endl;
+            i++;
+        }
+        reportFile.close();
     }
-    reportFile.close();
+    else // If the files fails to open
+        cout << "\n\nThe report file failed to open\n";
 }
 
 /* -----------------------------------------------------------------------------
@@ -680,3 +850,103 @@ void saveDatabase(Record bankAccountDatabase [], CommandLineParameters params)
     }
     dataFile.close();
 }
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          validateArgument()
+DESCRIPTION:       check arguments for valid input
+RETURNS:           Void function
+NOTES:
+----------------------------------------------------------------------------- */
+/*
+void validateArguments(Record bankAccountDatabase [],
+                       CommandLineParameters params)
+{
+    // Check Length
+    
+    for
+            if (inputType == FIRST || inputType == LAST || inputType == MIDDLE)
+                std::cout << INDENT << "Only letters, no spaces, ";
+            if (inputType == SS_NUM || inputType == AREA_CODE || inputType == PHONE_NUM)
+                std::cout << INDENT << "Only numbers allowed,";
+            if (inputType == ACCOUNT_NUM || inputType == PASSWORD)
+                std::cout << INDENT << "Only numbers and upper case letters,";
+            
+            std::cout << "not longer then " << (inputType == LAST ? LAST - 1 : inputType) << " characters.\n\n";
+        }
+        if (inputType == FIRST)
+            std::cout << INDENT << "Please enter your first name: ";
+        if (inputType == LAST)
+            std::cout << INDENT << "Please enter your last name: ";
+        if (inputType == MIDDLE)
+            std::cout << INDENT << "Please enter your middle intial: ";
+        if (inputType == SS_NUM)
+            std::cout << INDENT << "Please enter your social security number [no dashes]: ";
+        if (inputType == AREA_CODE)
+            std::cout << INDENT << "Please enter your phone number area code: ";
+        if (inputType == PHONE_NUM)
+            std::cout << INDENT << "Please enter your 7 digit phone number: ";
+        if (inputType == ACCOUNT_NUM)
+            std::cout << INDENT << "Please choose an account number [Length 5: A-Z,0-9]: ";
+        if (inputType == PASSWORD)
+            std::cout << INDENT << "Please choose a password [Length 6: A-Z,0-9]: " ;
+        
+        std::cin >> inputArray;
+        
+        // Check Length of Input
+        inputLength = strlen(inputArray);
+        if (inputType == FIRST || inputType == LAST)
+        {
+            if (inputLength < 1 || inputLength > 20)
+            {
+                isValid = false;
+            }
+        }
+        if (inputType == MIDDLE)
+        {
+            if (inputLength > 1)
+            {
+                isValid = false;
+            }
+        }
+        if (inputType == SS_NUM || inputType == AREA_CODE || inputType == PHONE_NUM)
+        {
+            if (inputLength != inputType)
+            {
+                isValid = false;
+            }
+        }
+ 
+        
+        // Check Validity of input Characters
+        int i = 0;
+        
+        if (inputType == FIRST || inputType == LAST || inputType == MIDDLE)
+        {
+            while (inputArray[i] != 0  && isValid == true)
+            {
+                isValid = isalpha(inputArray[i]);
+                i++;
+            }
+        }
+        if (inputType == SS_NUM || inputType == AREA_CODE || inputType == PHONE_NUM)
+        {
+            while (inputArray[i] != 0  && isValid == true)
+            {
+                isValid = isdigit(inputArray[i]);
+                i++;
+            }
+        }
+        if (inputType == ACCOUNT_NUM || inputType == PASSWORD)
+        {
+            while (inputArray[i] != 0  && isValid == true)
+            {
+                char character = inputArray[i];
+                isValid = isalnum(character);
+                if (isalpha(character))
+                    isValid = isupper(character);
+                i++;
+            }
+        }
+    } while (!isValid); // Keep looping as long as input is not valid
+}
+*/

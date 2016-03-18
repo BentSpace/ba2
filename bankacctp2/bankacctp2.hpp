@@ -26,8 +26,8 @@
 
 struct Record
 {
-    char firstName[21];
-    char lastName[21];
+    char firstName[100];
+    char lastName[100];
     char middleInitial;
     char ssNum[10];
     char phoneNumAreaCode[4];
@@ -40,20 +40,20 @@ struct Record
 // Holds anything user typed as part command line arguments
 struct CommandLineParameters
 {
-    char A[100];
+    char A[4];
     char D[100];
     char F[100];
-    char H[100];
+    char H[8];
     char L[100];
-    char M[100];
-    char N1[100];
-    char N2[100];
-    char P1[100];
-    char P2[100];
+    char M;
+    char N1[6];
+    char N2[6];
+    char P1[7];
+    char P2[7];
     char R[100];
-    char S[100];
+    char S[10];
     double T;
-    char W[100];
+    char W[7];
 };
 /*
 const char HELP_SCREEN [] =
