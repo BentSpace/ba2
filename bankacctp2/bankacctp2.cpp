@@ -8,11 +8,11 @@ COMPILER:          Xcode, GCC
 
 NOTES:             Put other information here ...
 
-MODIFICATION HISTORY: added argument validation
+MODIFICATION HISTORY: made case insensitive
 
 Author                  Date               Version
 ---------------         ----------         --------------
-Nathan Bertram          2016-03-18         Version 13.0
+Nathan Bertram          2016-03-18         Version 14.0
 
 ----------------------------------------------------------------------------- */
 
@@ -77,12 +77,9 @@ NOTES:             Put important usage notes here ...
 ----------------------------------------------------------------------------- */
 int main(int argc, char * argv[]) {
     char argCollection [argc];
+    // Array of structs to hold, each element hold a bank account record
     Record bankAccountDatabase [100] = { 0 };
     CommandLineParameters params = { 0 };
-    //char accountNumber [] = "F123C";
-    
-    
-    //cout << "argc = " << argc << endl;
     
     checkForNoArgs(argc);
     checkForSlashes(argc, argv);
@@ -191,6 +188,7 @@ void collectFirstCharArgs(int argc, char * argv[], char argCollection [])
         {
             displayErrorMessage();
         }
+        argument[1] = toupper(argument[1]);
         argCollection[i - 1] = argument[1]; // Add letter to arg collectoin
     }
     argCollection[argc - 1] = '\0';  // Set the last element of the array to the null byte
@@ -810,8 +808,10 @@ void produceReport(Record bankAccountDatabase [], CommandLineParameters params)
             reportFile << std::setw(10) << bankAccountDatabase[i].firstName;
             reportFile << std::setw(6) << bankAccountDatabase[i].middleInitial;
             reportFile << std::setw(13) << bankAccountDatabase[i].ssNum;
-            reportFile << "(" << bankAccountDatabase[i].phoneNumAreaCode << ")" << std::setw(12) << bankAccountDatabase[i].phoneNum;
-            reportFile << bankAccountDatabase[i].balance;
+            reportFile << "(" << bankAccountDatabase[i].phoneNumAreaCode << ")"
+            << std::setw(11) << bankAccountDatabase[i].phoneNum;
+            reportFile << "$" << std::setprecision(2)
+            << std::fixed << bankAccountDatabase[i].balance;
             reportFile << endl;
             i++;
         }
